@@ -9,8 +9,11 @@ const mongoose = require('mongoose');
 var passport = require('passport');
 var config = require('./config');
 
-const url = config.mongoUrl;
-const connect = mongoose.connect(url);
+const url = config.mongoURI;
+const connect = mongoose.connect(url, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 
 connect.then((db) => {
   console.log("Connected correctly to server");
