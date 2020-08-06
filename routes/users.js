@@ -10,9 +10,7 @@ const { route } = require('./favoriteRouter');
 router.use(bodyParser.json());
 
 /* GET users listing. */
-route.use('*', cors.corsWithOptions, (req, res) => {
-  res.statusCode(200);
-})
+router.options('*', cors.corsWithOptions, (req, res) => { res.sendStatus(200); } )
 router.get('/', cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, function(req, res, next) {
   User.find({})
   .then((users) => {

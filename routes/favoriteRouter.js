@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const authenticate = require("../authenticate");
 const cors = require("./cors");
-const Favorites = require("../models/favourite");
+const Favorites = require("../models/favorites");
 
 const favoriteRouter = express.Router();
 
@@ -12,18 +12,15 @@ favoriteRouter
     res.sendStatus(200);
   })
   .get(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
-    Favorites.find({})
+    Favorites.findOne({ user: req.user._id })
       .populate("user")
       .populate("dishes")
-      .then(
-        (favorites) => {
-          (res.statusCode = 200),
-            res.setHeader("Content-Type", "application/json");
-          res.json(favorites);
-        },
-        (err) => next(err)
-      )
-      .catch((err) => next(err));
+      .exec((err, favorite) => {
+        if (err) return next(err);
+        req.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(favorite);
+      });
   })
   .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Favorites.findOne({ user: req.user._id })
@@ -81,7 +78,7 @@ favoriteRouter
         (resp) => {
           (res.statusCode = 200),
             res.setHeader("Content-Type", "application/json");
-          res.json(resp);
+            res.json(resp);
         },
         (err) => next(err)
       )
